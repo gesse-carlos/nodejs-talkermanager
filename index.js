@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const randToken = require('rand-token');
 
 const getTalker = require('./utils/getTalker');
+const authMiddleware = require('./middlewares/authMiddleware');
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,22 +32,7 @@ app.get('/talker/:id', async (req, res) => {
   res.status(200).json(result);
 });
 
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email) res.status(400).json({ message: 'O campo "email" é obrigatório' });
-
-  if (!(/\S+@\S+\.\S+/.test(email))) {
-    res.status(400)
-    .json({ message: 'O "email" deve ter o formato "email@email.com"' });
-  }
-
-  if (!password) res.status(400).json({ message: 'O campo "password" é obrigatório' });
-
-  if (password.length < 6) {
-    res.status(400).json({ message: 'O "password" deve ter pelo menos 6 caracteres' });
-  }
-
+app.post('/login', authMiddleware, (req, res) => {
   const token = randToken.generate(16);
   res.status(200).json({ token });
 });
