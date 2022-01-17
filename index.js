@@ -1,9 +1,17 @@
 const express = require('express');
+const fs = require('fs/promises');
 const bodyParser = require('body-parser');
-const randToken = require('rand-token');
 
+const token = require('./utils/token');
 const getTalker = require('./utils/getTalker');
-const authMiddleware = require('./middlewares/authMiddleware');
+const loginAuthMiddleware = require('./middlewares/loginAuthMiddleware');
+const {
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateTalkKeys,
+} = require('./middlewares/createTalkerMiddleware');
 
 const app = express();
 app.use(bodyParser.json());
@@ -32,9 +40,26 @@ app.get('/talker/:id', async (req, res) => {
   res.status(200).json(result);
 });
 
-app.post('/login', authMiddleware, (req, res) => {
-  const token = randToken.generate(16);
+app.post('/login', loginAuthMiddleware, (req, res) => {
   res.status(200).json({ token });
+});
+
+app.post('/talker',
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateTalkKeys,
+  async (req, res) => {
+    const { name, age, talk } = req.body;
+    const talkers = await getTalker();
+    const id = talkers[talkers.length - 1].id + 1;
+
+    talkers.push({ id, name, age, talk });
+
+    // https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#space_argument
+    await fs.writeFile('./talker.json', JSON.stringify(talkers, null, 2));
+    return res.status(201).json({ id, name, age, talk });
 });
 
 app.listen(PORT, () => {
