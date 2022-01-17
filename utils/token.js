@@ -1,3 +1,3 @@
-const randToken = require('rand-token');
+const crypto = require('crypto');
 
-module.exports = randToken.generate(16);
+module.exports = crypto.randomBytes(8).toString('hex');
