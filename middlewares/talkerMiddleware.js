@@ -72,4 +72,10 @@ const validateTalkKeys = (req, res, next) => {
   next();
 };
 
-module.exports = { validateToken, validateName, validateAge, validateTalk, validateTalkKeys };
+module.exports = {
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateTalkKeys,
+};
