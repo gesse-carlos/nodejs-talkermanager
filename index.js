@@ -1,9 +1,9 @@
 const express = require('express');
-const fs = require('fs/promises');
 const bodyParser = require('body-parser');
 
 const token = require('./utils/token');
 const getTalker = require('./utils/getTalker');
+const setTalker = require('./utils/setTalker');
 const loginAuthMiddleware = require('./middlewares/loginAuthMiddleware');
 const {
   validateToken,
@@ -58,7 +58,7 @@ app.post('/talker',
     talkers.push({ id, name, age, talk });
 
     // https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#space_argument
-    await fs.writeFile('./talker.json', JSON.stringify(talkers, null, 2));
+    await setTalker(talkers);
     return res.status(201).json({ id, name, age, talk });
 });
 
