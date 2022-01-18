@@ -11,7 +11,7 @@ const {
   validateAge,
   validateTalk,
   validateTalkKeys,
-} = require('./middlewares/createTalkerMiddleware');
+} = require('./middlewares/talkerMiddleware');
 
 const app = express();
 app.use(bodyParser.json());
