@@ -44,7 +44,8 @@ app.post('/login', loginAuthMiddleware, (req, res) => {
   res.status(200).json({ token });
 });
 
-app.post('/talker',
+app.post(
+  '/talker',
   validateToken,
   validateName,
   validateAge,
@@ -59,8 +60,31 @@ app.post('/talker',
 
     // https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#space_argument
     await setTalker(talkers);
-    return res.status(201).json({ id, name, age, talk });
-});
+    res.status(201).json({ id, name, age, talk });
+  },
+);
+
+app.put(
+  '/talker/:id',
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateTalkKeys,
+  async (req, res) => {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
+
+    const talkers = await getTalker();
+
+    const talkerIndex = talkers.findIndex((person) => +(person.id) === +id);
+    talkers[talkerIndex] = { ...talkers[talkerIndex], name, age, talk };
+
+    await setTalker(talkers);
+
+    res.status(200).json({ id: +id, name, age, talk });
+  },
+);
 
 app.listen(PORT, () => {
   console.log('Online');
