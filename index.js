@@ -86,6 +86,16 @@ app.put(
   },
 );
 
+app.delete('/talker/:id', validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  const talkers = await getTalker();
+  const filteredTalkers = talkers.filter((talker) => +(talker.id) !== +id);
+
+  await setTalker(filteredTalkers);
+  res.status(204).json({ });
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
